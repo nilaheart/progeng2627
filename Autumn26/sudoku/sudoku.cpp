@@ -76,7 +76,11 @@ bool check_sequence(const std::vector<int>& v){
 // r: 3; in: 1 2 3 4 4 1 2 76 4 4 4 1 9 4 1 -7 | out: 9 4 1 -7
 // note that this function must (meaningfully) use function twod_to_oned
 void get_row(int r, const std::vector<int>& in, std::vector<int>& out){
-    // write your code here
+    int rowlength=std::sqrt(in.size());
+    out.clear();
+    for(int i=0; i<rowlength; i++){
+        out.push_back(in[twod_to_oned(r, i, rowlength)]);
+    }
 }
 
 // function get_col
@@ -85,7 +89,11 @@ void get_row(int r, const std::vector<int>& in, std::vector<int>& out){
 // c: 0; in: 1 2 3 4 4 1 2 76 4 4 4 1 9 4 1 -7 | out: 1 4 4 9
 // note that this function must (meaningfully) use function twod_to_oned
 void get_col(int c, const std::vector<int>& in, std::vector<int>& out){
-    // write your code here
+    int rowlength = std::sqrt(in.size());
+    out.clear();
+    for(int i=0; i<rowlength; i++){
+    out.push_back(in[twod_to_oned(i, c, rowlength)]);
+    }
 }
 
 // function get_subsq
@@ -99,7 +107,17 @@ void get_col(int c, const std::vector<int>& in, std::vector<int>& out){
 // subs: 3; in: 1 2 3 4 4 1 2 76 4 4 4 1 9 4 1 -7 | out: 4 1 1 -7
 // note that this function must (meaningfully) use function twod_to_oned
 void get_subsq(int subs, const std::vector<int>& in, std::vector<int>& out){
-    // write your code here
+    int rowlength = std::sqrt(in.size());
+    int subsqlength = std::sqrt(rowlength);
+    int boxes_per_row = rowlength/subsqlength;
+    int start_row = (subs / boxes_per_row) * subsqlength;
+    int start_col = (subs % boxes_per_row) * subsqlength;
+    out.clear();
+    for(int i=0; i<subsqlength; i++){
+        for(int k=0; k<subsqlength; k++){
+            out.push_back(in[twod_to_oned(start_row + i, start_col + k, rowlength)]);                  
+        }
+    }
 }
 
 // function valid_sudoku 
@@ -128,12 +146,22 @@ bool valid_sudoku(const std::vector<int>& g){
 
     // for each column...
     for(int i = 0; i < side; i++){
-        // write your code here
+        seq.clear();
+        get_col(i, g, seq);
+
+        if(!check_sequence(seq)){
+            return false;
+        }
     }
 
     // for each subsquare...
    for(int i = 0; i < side; i++){
-        // write your code here
+        seq.clear();
+        get_subsq(i, g, seq);
+
+        if(!check_sequence(seq)){
+            return false;
+        }
     }
 
     // if the program execution gets to here it means that 
@@ -197,5 +225,4 @@ int main(int argc, char* argv[]){
     else{
         std::cout << "not valid" << std::endl; 
     }
-
 }
